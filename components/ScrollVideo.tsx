@@ -31,8 +31,10 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
 
     let currentTarget = 0;
     let seekPending = false;
-    // Seeking hides the poster, and a video locked by blocked autoplay has no frame
-    // to show instead, so seeks wait until the video is unlocked.
+    // When autoplay is blocked (iOS Low Power Mode), iOS paints no video frame until a
+    // touch unlocks the video; only the poster can show. Any seek, even to 0, hides the
+    // poster and leaves a blank screen, so seeks are skipped while blocked and resynced
+    // after the unlock. Seek only through requestSeek(), never video.currentTime directly.
     let isSeekBlocked = false;
     let loadProgress = 0;
     let displayedProgress = 0;
@@ -173,7 +175,12 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     window.addEventListener("touchstart", handleTouchStart, { once: true });
     unlockVideo().catch((error: unknown) => {
       if (error instanceof DOMException && error.name === "NotAllowedError") {
-        if (poster) video.poster = poster;
+        if (poster) {
+          video.poster = poster;
+          // On unlock iOS hides the poster a moment before the first frame paints, and the
+          // transparent video would flash the page behind it, so the background covers that gap.
+          video.style.backgroundImage = `url("${poster}")`;
+        }
         isSeekBlocked = true;
         loadVideoManually().catch(() => {});
       }
@@ -234,7 +241,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
         <video
           ref={videoRef}
           src={src}
-          className="h-full w-full object-cover"
+          className="h-full w-full bg-cover bg-center bg-no-repeat object-cover"
           muted
           playsInline
           preload="auto"
