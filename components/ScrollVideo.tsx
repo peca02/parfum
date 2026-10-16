@@ -31,6 +31,9 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
 
     let currentTarget = 0;
     let seekPending = false;
+    // Seeking hides the poster, and a video locked by blocked autoplay has no frame
+    // to show instead, so seeks wait until the video is unlocked.
+    let isSeekBlocked = false;
     let loadProgress = 0;
     let displayedProgress = 0;
     const loaderStart = performance.now();
@@ -41,6 +44,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     };
 
     const requestSeek = () => {
+      if (isSeekBlocked) return;
       if (video.seeking) {
         seekPending = true;
       } else {
@@ -152,6 +156,10 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
         window.removeEventListener("touchstart", handleTouchStart);
         // The browser now loads the video by itself.
         manualLoadController.abort();
+        if (isSeekBlocked) {
+          isSeekBlocked = false;
+          requestSeek();
+        }
       });
 
     const handleTouchStart = () => {
@@ -166,6 +174,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     unlockVideo().catch((error: unknown) => {
       if (error instanceof DOMException && error.name === "NotAllowedError") {
         if (poster) video.poster = poster;
+        isSeekBlocked = true;
         loadVideoManually().catch(() => {});
       }
     });
