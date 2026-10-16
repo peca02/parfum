@@ -31,11 +31,6 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
 
     let currentTarget = 0;
     let seekPending = false;
-    // When autoplay is blocked (iOS Low Power Mode), iOS paints no video frame until a
-    // touch unlocks the video; only the poster can show. Any seek, even to 0, hides the
-    // poster and leaves a blank screen, so seeks are skipped while blocked and resynced
-    // after the unlock. Seek only through requestSeek(), never video.currentTime directly.
-    let isSeekBlocked = false;
     let loadProgress = 0;
     let displayedProgress = 0;
     const loaderStart = performance.now();
@@ -46,7 +41,6 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     };
 
     const requestSeek = () => {
-      if (isSeekBlocked) return;
       if (video.seeking) {
         seekPending = true;
       } else {
@@ -158,10 +152,6 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
         window.removeEventListener("touchstart", handleTouchStart);
         // The browser now loads the video by itself.
         manualLoadController.abort();
-        if (isSeekBlocked) {
-          isSeekBlocked = false;
-          requestSeek();
-        }
       });
 
     const handleTouchStart = () => {
@@ -175,13 +165,10 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     window.addEventListener("touchstart", handleTouchStart, { once: true });
     unlockVideo().catch((error: unknown) => {
       if (error instanceof DOMException && error.name === "NotAllowedError") {
-        if (poster) {
-          video.poster = poster;
-          // On unlock iOS hides the poster a moment before the first frame paints, and the
-          // transparent video would flash the page behind it, so the background covers that gap.
-          video.style.backgroundImage = `url("${poster}")`;
-        }
-        isSeekBlocked = true;
+        // iOS paints no video frame until a touch unlocks the video, so the transparent
+        // video would show the page behind it. A background is used instead of the poster
+        // attribute because seeking and unlocking hide the poster before a frame is ready.
+        if (poster) video.style.backgroundImage = `url("${poster}")`;
         loadVideoManually().catch(() => {});
       }
     });
