@@ -138,7 +138,8 @@ export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
         type: response.headers.get("Content-Type") ?? "",
       });
       objectUrl = URL.createObjectURL(blob);
-      video.src = objectUrl;
+      // The start-time fragment makes iOS paint the first frame before the video is unlocked.
+      video.src = `${objectUrl}#t=0.001`;
       loadProgress = 100;
     };
 
