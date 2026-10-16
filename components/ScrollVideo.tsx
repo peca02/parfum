@@ -108,11 +108,15 @@ export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
       }
     };
 
-    // iOS Safari refuses to seek a video that has never been played.
+    // iOS Safari won't load or seek a video that has never been played. Muted inline
+    // video may play without a gesture; if that is blocked, the touchstart fallback retries.
     const unlockVideo = () => {
       video
         .play()
-        .then(() => video.pause())
+        .then(() => {
+          video.pause();
+          window.removeEventListener("touchstart", unlockVideo);
+        })
         .catch(() => {});
     };
 
@@ -121,6 +125,7 @@ export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
     video.addEventListener("seeked", handleSeeked);
     video.addEventListener("canplay", handleCanPlay);
     window.addEventListener("touchstart", unlockVideo, { once: true });
+    unlockVideo();
     gsap.ticker.add(updateLoader);
 
     // Events may have already fired before hydration (e.g. cached video).
