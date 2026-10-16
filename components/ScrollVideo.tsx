@@ -13,10 +13,12 @@ const COUNTER_MAX_SPEED_PER_MS = 0.2;
 
 type ScrollVideoProps = {
   src: string;
+  // Shown only when autoplay is blocked, because iOS then paints no video frame until a touch.
+  poster?: string;
   className?: string;
 };
 
-export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
+export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
@@ -138,8 +140,7 @@ export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
         type: response.headers.get("Content-Type") ?? "",
       });
       objectUrl = URL.createObjectURL(blob);
-      // The start-time fragment makes iOS paint the first frame before the video is unlocked.
-      video.src = `${objectUrl}#t=0.001`;
+      video.src = objectUrl;
       loadProgress = 100;
     };
 
@@ -164,6 +165,7 @@ export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
     window.addEventListener("touchstart", handleTouchStart, { once: true });
     unlockVideo().catch((error: unknown) => {
       if (error instanceof DOMException && error.name === "NotAllowedError") {
+        if (poster) video.poster = poster;
         loadVideoManually().catch(() => {});
       }
     });
