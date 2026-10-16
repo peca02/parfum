@@ -108,24 +108,64 @@ export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
       }
     };
 
+    const manualLoadController = new AbortController();
+    let objectUrl: string | null = null;
+
+    // When autoplay is blocked (e.g. iOS Low Power Mode) the browser won't load the
+    // video by itself, so it is downloaded here to drive the loader with real progress.
+    const loadVideoManually = async () => {
+      const response = await fetch(src, {
+        signal: manualLoadController.signal,
+      });
+      if (!response.body) return;
+
+      const total = Number(response.headers.get("Content-Length"));
+      const reader = response.body.getReader();
+      const chunks: BlobPart[] = [];
+      let received = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.byteLength;
+        if (total > 0) {
+          loadProgress = Math.max(loadProgress, (received / total) * 100);
+        }
+      }
+
+      const blob = new Blob(chunks, {
+        type: response.headers.get("Content-Type") ?? "",
+      });
+      objectUrl = URL.createObjectURL(blob);
+      video.src = objectUrl;
+      loadProgress = 100;
+    };
+
     // iOS Safari won't load or seek a video that has never been played. Muted inline
     // video may play without a gesture; if that is blocked, the touchstart fallback retries.
-    const unlockVideo = () => {
-      video
-        .play()
-        .then(() => {
-          video.pause();
-          window.removeEventListener("touchstart", unlockVideo);
-        })
-        .catch(() => {});
+    const unlockVideo = () =>
+      video.play().then(() => {
+        video.pause();
+        window.removeEventListener("touchstart", handleTouchStart);
+        // The browser now loads the video by itself.
+        manualLoadController.abort();
+      });
+
+    const handleTouchStart = () => {
+      unlockVideo().catch(() => {});
     };
 
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
     video.addEventListener("progress", updateBufferProgress);
     video.addEventListener("seeked", handleSeeked);
     video.addEventListener("canplay", handleCanPlay);
-    window.addEventListener("touchstart", unlockVideo, { once: true });
-    unlockVideo();
+    window.addEventListener("touchstart", handleTouchStart, { once: true });
+    unlockVideo().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "NotAllowedError") {
+        loadVideoManually().catch(() => {});
+      }
+    });
     gsap.ticker.add(updateLoader);
 
     // Events may have already fired before hydration (e.g. cached video).
@@ -166,8 +206,10 @@ export function ScrollVideo({ src, className = "" }: ScrollVideoProps) {
       video.removeEventListener("progress", updateBufferProgress);
       video.removeEventListener("seeked", handleSeeked);
       video.removeEventListener("canplay", handleCanPlay);
-      window.removeEventListener("touchstart", unlockVideo);
+      window.removeEventListener("touchstart", handleTouchStart);
       gsap.ticker.remove(updateLoader);
+      manualLoadController.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   });
 
