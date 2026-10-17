@@ -4,3 +4,10 @@
   --color-overlay: #000;
   --color-overlay-foreground: #fff;
 }
+
+@layer base {
+  html {
+    /* Reserves the scrollbar space, so unlocking scroll after the loader doesn't shift the layout. */
+    scrollbar-gutter: stable;
+  }
+}

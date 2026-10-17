@@ -35,6 +35,10 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     let displayedProgress = 0;
     const loaderStart = performance.now();
 
+    // Scrolling stays locked while the loader is visible.
+    const root = document.documentElement;
+    root.style.overflow = "hidden";
+
     const doSeek = () => {
       seekPending = false;
       video.currentTime = currentTarget;
@@ -107,6 +111,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       if (displayedProgress >= 100) {
         gsap.ticker.remove(updateLoader);
         setIsLoaderVisible(false);
+        root.style.overflow = "";
       }
     };
 
@@ -214,6 +219,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       video.removeEventListener("canplay", handleCanPlay);
       window.removeEventListener("touchstart", handleTouchStart);
       gsap.ticker.remove(updateLoader);
+      root.style.overflow = "";
       manualLoadController.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
