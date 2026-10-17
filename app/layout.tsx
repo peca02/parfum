@@ -21,9 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
+    // overflow-hidden locks scrolling from the first paint, before any JavaScript runs;
+    // ScrollVideo removes it when its loader hides.
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full overflow-hidden antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -35,9 +35,10 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     let displayedProgress = 0;
     const loaderStart = performance.now();
 
-    // Scrolling stays locked while the loader is visible.
+    // Scrolling stays locked while the loader is visible. The root layout already renders
+    // this class; adding it again keeps the lock after a remount (e.g. React Strict Mode).
     const root = document.documentElement;
-    root.style.overflow = "hidden";
+    root.classList.add("overflow-hidden");
 
     const doSeek = () => {
       seekPending = false;
@@ -111,7 +112,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       if (displayedProgress >= 100) {
         gsap.ticker.remove(updateLoader);
         setIsLoaderVisible(false);
-        root.style.overflow = "";
+        root.classList.remove("overflow-hidden");
       }
     };
 
@@ -219,7 +220,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       video.removeEventListener("canplay", handleCanPlay);
       window.removeEventListener("touchstart", handleTouchStart);
       gsap.ticker.remove(updateLoader);
-      root.style.overflow = "";
+      root.classList.remove("overflow-hidden");
       manualLoadController.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
