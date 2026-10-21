@@ -1,15 +1,18 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useLoader } from "@/components/LoaderProvider";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const MIN_LOADER_DURATION_MS = 1000;
 // Caps how fast the counter catches up after a jump in load progress (200% per second).
 const COUNTER_MAX_SPEED_PER_MS = 0.2;
+// The video zoom is derived from this offset, so the parallax never reveals the video edges.
+const PARALLAX_PX = 9;
 
 type ScrollVideoProps = {
   src: string;
@@ -22,7 +25,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
-  const [isLoaderVisible, setIsLoaderVisible] = useState(true);
+  const { isLoaderVisible, hideLoader } = useLoader();
 
   useGSAP(() => {
     const video = videoRef.current;
@@ -111,7 +114,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
 
       if (displayedProgress >= 100) {
         gsap.ticker.remove(updateLoader);
-        setIsLoaderVisible(false);
+        hideLoader();
         root.classList.remove("overflow-hidden");
       }
     };
@@ -193,6 +196,14 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       // A non-axis-aligned transform keeps the browser from snapping the video layer
       // to whole pixels, which shows as jitter during the slow end of the easing.
       gsap.set(wrapper, { rotation: 0.01 });
+
+      // The smallest zoom that leaves a margin of PARALLAX_PX on every side.
+      const updateZoom = () => {
+        const smallerSide = Math.min(wrapper.offsetWidth, wrapper.offsetHeight);
+        gsap.set(wrapper, { scale: 1 + (2 * PARALLAX_PX) / smallerSide });
+      };
+      updateZoom();
+
       const xTo = gsap.quickTo(wrapper, "x", {
         duration: 1.25,
         ease: "power2.out",
@@ -205,12 +216,16 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       const handleMouseMove = (event: MouseEvent) => {
         const moveX = (event.clientX / window.innerWidth) * 2 - 1;
         const moveY = (event.clientY / window.innerHeight) * 2 - 1;
-        xTo(moveX * -15);
-        yTo(moveY * -15);
+        xTo(moveX * -PARALLAX_PX);
+        yTo(moveY * -PARALLAX_PX);
       };
 
       window.addEventListener("mousemove", handleMouseMove);
-      return () => window.removeEventListener("mousemove", handleMouseMove);
+      window.addEventListener("resize", updateZoom);
+      return () => {
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("resize", updateZoom);
+      };
     });
 
     return () => {
@@ -230,7 +245,7 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     <>
       <div
         ref={wrapperRef}
-        className={`fixed top-0 left-0 z-0 h-full w-full origin-center scale-105 ${className}`}
+        className={`fixed top-0 left-0 z-0 h-full w-full origin-center ${className}`}
       >
         <video
           ref={videoRef}

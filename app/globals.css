@@ -3,6 +3,18 @@
 @theme {
   --color-overlay: #000;
   --color-overlay-foreground: #fff;
+  /* Temporary navigation colors until the design system is in place. */
+  --color-glass-foreground: #2a1c19;
+  --color-glass-tint: rgb(255 255 255 / 0.16);
+  --color-cta: #2a1c19;
+  --color-cta-foreground: #fff;
+  --shadow-glass:
+    inset 1px 1px 1px -0.5px rgb(255 255 255 / 0.9),
+    inset -1px -1px 1px -0.5px rgb(255 255 255 / 0.6),
+    inset 0 0 16px rgb(255 255 255 / 0.25),
+    /* --glass-shadow-strength lets the navigation intro fade the drop shadow in. */
+    0 8px 32px rgb(42 28 25 / calc(0.12 * var(--glass-shadow-strength, 1)));
+  --font-sans: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {

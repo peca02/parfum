@@ -22,6 +22,8 @@ Create folders only when needed. Do not create empty directories.
 
 ## Typography
 
+- Font Family: Satoshi
+- Typography Scale: Large
 - Use next/font over CSS/CDN fonts.
 - Keep body text line height between 1.4-1.6
 - Keep large text line height between 1.1-1.3
@@ -29,8 +31,9 @@ Create folders only when needed. Do not create empty directories.
 
 ## Layout & Spacing
 
-- Use a max container width of 1280px.
+- Don't use a max-width container. Sections are full-width with horizontal padding of `padding: 0 4vw`.
 - Use a 4px spacing system (4px multiples only).
+- Use consistent large spacing between elements.
 - Use Tailwind spacing scale.
 
 ## Animation
