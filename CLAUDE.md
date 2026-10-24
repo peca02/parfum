@@ -31,7 +31,7 @@ Create folders only when needed. Do not create empty directories.
 
 ## Layout & Spacing
 
-- Don't use a max-width container. Sections are full-width with horizontal padding of `padding: 0 4vw`.
+- Don't use a max-width container. Sections are full-width with horizontal padding of `padding: 0 6vw`.
 - Use a 4px spacing system (4px multiples only).
 - Use consistent large spacing between elements.
 - Use Tailwind spacing scale.

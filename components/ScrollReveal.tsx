@@ -12,6 +12,9 @@ gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 const DRIFT = 0.12;
 const SCRUB_SMOOTHING_S = 0.6;
 const DESCENDER_ROOM_EM = 0.15;
+// Width of the soft mask edge the lines enter through (side) and exit through (top).
+const ENTER_FEATHER_EM = 0.5;
+const EXIT_FEATHER_EM = 0.3;
 
 // Fractions of the full page scroll, the same progress that drives the video.
 type ScrollRange = [start: number, end: number];
@@ -62,16 +65,32 @@ export function ScrollReveal({
       // are in viewport units, so the line breaks stay the same on resize.
       document.fonts.ready.then(() =>
         context.add(() => {
-          const split = SplitText.create(Array.from(container.children), {
+          const textBlocks = Array.from(container.children);
+          const split = SplitText.create(textBlocks, {
             type: "lines",
             mask: "lines",
             // The split lines keep the original text, so screen readers read it unchanged.
             aria: "none",
           });
 
-          // Satoshi's descenders reach below the tight line height, so each mask extends
-          // down to keep them unclipped, and the negative margin keeps the line spacing.
+          // In a flex column the masks' negative margins add up instead of collapsing
+          // into the larger one, so they cancel the mask padding exactly.
+          gsap.set(textBlocks, { display: "flex", flexDirection: "column" });
+
+          const featherSide = from === "left" ? "Left" : "Right";
+
+          // A gradient mask replaces the hard overflow clip, so the lines fade in and out
+          // at the edges. Each mask grows outward by the feather width, so the text at rest
+          // stays fully opaque, and negative margins keep the layout unchanged. The bottom
+          // grows too, because Satoshi's descenders reach below the tight line height.
           gsap.set(split.masks, {
+            overflow: "visible",
+            maskImage: `linear-gradient(to ${from === "left" ? "right" : "left"}, transparent, #000 ${ENTER_FEATHER_EM}em), linear-gradient(transparent, #000 ${EXIT_FEATHER_EM}em)`,
+            maskComposite: "intersect",
+            [`padding${featherSide}`]: `${ENTER_FEATHER_EM}em`,
+            [`margin${featherSide}`]: `-${ENTER_FEATHER_EM}em`,
+            paddingTop: `${EXIT_FEATHER_EM}em`,
+            marginTop: `-${EXIT_FEATHER_EM}em`,
             paddingBottom: `${DESCENDER_ROOM_EM}em`,
             marginBottom: `-${DESCENDER_ROOM_EM}em`,
           });
