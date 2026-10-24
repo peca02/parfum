@@ -13,7 +13,7 @@ export function ScrollCopy() {
         className="col-start-1 row-start-1 justify-self-start"
       >
         {/* w-min puts every word on its own line. */}
-        <h2 className={displayStyles}>Pure, rare, yours.</h2>
+        <h2 className={displayStyles}>Pure rare yours</h2>
       </ScrollReveal>
 
       <ScrollReveal
@@ -22,7 +22,7 @@ export function ScrollCopy() {
         exit={[0.525, 0.65]}
         className="col-start-1 row-start-1 justify-self-end text-right"
       >
-        <h2 className={displayStyles}>Made to linger.</h2>
+        <h2 className={displayStyles}>Made to linger</h2>
       </ScrollReveal>
 
       <ScrollReveal
@@ -31,9 +31,9 @@ export function ScrollCopy() {
         className="col-start-1 row-start-1 max-w-2/5 justify-self-start"
       >
         <h2 className="text-display-sm font-black tracking-tight">
-          Quietly bold.
+          Quietly bold
         </h2>
-        <p className="mt-6 text-lead font-bold">
+        <p className="mt-[0.5em] text-lead font-bold">
           A scent that stays long after you leave.
         </p>
       </ScrollReveal>

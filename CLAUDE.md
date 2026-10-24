@@ -32,7 +32,9 @@ Create folders only when needed. Do not create empty directories.
 ## Layout & Spacing
 
 - Don't use a max-width container. Sections are full-width with horizontal padding of `padding: 0 6vw`.
-- Use a 4px spacing system (4px multiples only).
+- Use a consistent spacing scale in every unit. No arbitrary values like 7px or 0.37em.
+  - px/rem: multiples of 4px (0.25rem), i.e. the Tailwind spacing scale.
+  - em: multiples of 0.25em (0.25em, 0.5em, 0.75em, 1em…).
 - Use consistent large spacing between elements.
 - Use Tailwind spacing scale.
 
