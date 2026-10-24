@@ -5,7 +5,7 @@ const displayStyles = "w-min text-display font-black tracking-tight";
 export function ScrollCopy() {
   return (
     // All blocks share one grid cell, so each one sits vertically centered over the video.
-    <div className="fixed inset-0 z-10 grid items-center px-[6vw] text-copy">
+    <div className="fixed inset-0 z-10 grid items-center px-[6vw] text-copy uppercase">
       <ScrollReveal
         from="left"
         enter={[0.05, 0.16]}
