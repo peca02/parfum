@@ -11,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 // Vertical travel as a fraction of the viewport height, on each side of the rest position.
 const DRIFT = 0.12;
 const SCRUB_SMOOTHING_S = 0.6;
+const DESCENDER_ROOM_EM = 0.15;
 
 // Fractions of the full page scroll, the same progress that drives the video.
 type ScrollRange = [start: number, end: number];
@@ -67,6 +68,14 @@ export function ScrollReveal({
             // The split lines keep the original text, so screen readers read it unchanged.
             aria: "none",
           });
+
+          // Satoshi's descenders reach below the tight line height, so each mask extends
+          // down to keep them unclipped, and the negative margin keeps the line spacing.
+          gsap.set(split.masks, {
+            paddingBottom: `${DESCENDER_ROOM_EM}em`,
+            marginBottom: `-${DESCENDER_ROOM_EM}em`,
+          });
+
           const timeline = createScrollTimeline();
 
           timeline.fromTo(
@@ -101,7 +110,7 @@ export function ScrollReveal({
               skewX: 0,
               autoAlpha: 1,
               filter: "blur(0px)",
-              ease: "power3.out",
+              ease: "power1.out",
               duration: enterDuration * 0.6,
               stagger: { amount: enterDuration * 0.4 },
             },
@@ -119,7 +128,7 @@ export function ScrollReveal({
                 yPercent: -110,
                 autoAlpha: 0,
                 immediateRender: false,
-                ease: "power2.in",
+                ease: "power1.in",
                 duration: exitDuration * 0.6,
                 stagger: { amount: exitDuration * 0.4 },
               },

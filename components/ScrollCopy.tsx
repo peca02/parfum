@@ -8,8 +8,8 @@ export function ScrollCopy() {
     <div className="fixed inset-0 z-10 grid items-center px-[4vw] text-copy">
       <ScrollReveal
         from="left"
-        enter={[0.05, 0.12]}
-        exit={[0.24, 0.3]}
+        enter={[0.05, 0.16]}
+        exit={[0.2, 0.3]}
         className="col-start-1 row-start-1 justify-self-start"
       >
         {/* w-min puts every word on its own line. */}
@@ -18,8 +18,8 @@ export function ScrollCopy() {
 
       <ScrollReveal
         from="right"
-        enter={[0.35, 0.42]}
-        exit={[0.58, 0.65]}
+        enter={[0.35, 0.475]}
+        exit={[0.525, 0.65]}
         className="col-start-1 row-start-1 justify-self-end text-right"
       >
         <h2 className={displayStyles}>Made to linger.</h2>
@@ -27,7 +27,7 @@ export function ScrollCopy() {
 
       <ScrollReveal
         from="left"
-        enter={[0.8, 0.88]}
+        enter={[0.8, 0.95]}
         className="col-start-1 row-start-1 max-w-2/5 justify-self-start"
       >
         <h2 className="text-display-sm font-black tracking-tight">

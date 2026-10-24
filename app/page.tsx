@@ -11,7 +11,7 @@ export default function HomePage() {
       />
       <ScrollCopy />
       {/* Temporary spacer that provides scroll length until real content is added. */}
-      <div className="h-[500vh]" aria-hidden="true" />
+      <div className="h-[750vh]" aria-hidden="true" />
     </main>
   );
 }
