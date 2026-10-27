@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { scrollSections } from "@/lib/scrollSections";
 
 const displayStyles = "w-min text-display font-black tracking-tight";
 
@@ -8,8 +9,7 @@ export function ScrollCopy() {
     <div className="fixed inset-0 z-10 grid items-center px-[6vw] text-copy uppercase">
       <ScrollReveal
         from="left"
-        enter={[0.05, 0.16]}
-        exit={[0.2, 0.3]}
+        {...scrollSections.essence}
         className="col-start-1 row-start-1 justify-self-start"
       >
         {/* w-min puts every word on its own line. */}
@@ -18,8 +18,7 @@ export function ScrollCopy() {
 
       <ScrollReveal
         from="right"
-        enter={[0.35, 0.475]}
-        exit={[0.525, 0.65]}
+        {...scrollSections.linger}
         className="col-start-1 row-start-1 justify-self-end text-right"
       >
         <h2 className={displayStyles}>Made to linger</h2>
@@ -27,13 +26,13 @@ export function ScrollCopy() {
 
       <ScrollReveal
         from="left"
-        enter={[0.8, 0.95]}
+        {...scrollSections.presence}
         className="col-start-1 row-start-1 max-w-2/5 justify-self-start"
       >
         <h2 className="text-display-sm font-black tracking-tight">
           Quietly bold
         </h2>
-        <p className="mt-[0.5em] text-lead font-bold">
+        <p className="mt-[0.5em] text-lead font-bold text-copy-muted">
           A scent that stays long after you leave.
         </p>
       </ScrollReveal>

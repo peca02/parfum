@@ -1,10 +1,21 @@
 import Link from "next/link";
 import { NavigationIntro } from "@/components/NavigationIntro";
+import { NavScrollLink } from "@/components/NavScrollLink";
+import { getSectionMidpoint, scrollSections } from "@/lib/scrollSections";
 
 const navLinks = [
-  { label: "Essence", href: "#essence" },
-  { label: "Linger", href: "#linger" },
-  { label: "Presence", href: "#presence" },
+  {
+    label: "Essence",
+    href: "#essence",
+    progress: getSectionMidpoint(scrollSections.essence),
+  },
+  {
+    label: "Linger",
+    href: "#linger",
+    progress: getSectionMidpoint(scrollSections.linger),
+  },
+  // The last text stays until the video ends, so Presence lands on the last frame.
+  { label: "Presence", href: "#presence", progress: 1 },
 ];
 
 const ctaLink = { label: "Buy", href: "#buy" };
@@ -20,13 +31,14 @@ export function Navigation() {
         <ul className="flex items-center gap-1">
           {navLinks.map((link) => (
             <li key={link.href}>
-              <Link
+              <NavScrollLink
                 href={link.href}
+                progress={link.progress}
                 data-nav-link
                 className={`block rounded-full px-3 py-2 text-sm uppercase font-semibold text-glass-foreground/80 transition-colors hover:text-glass-foreground md:px-5 md:text-base ${focusStyles}`}
               >
                 {link.label}
-              </Link>
+              </NavScrollLink>
             </li>
           ))}
           <li>

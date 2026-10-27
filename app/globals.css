@@ -9,6 +9,7 @@
   --color-cta: #2a1c19;
   --color-cta-foreground: #fff;
   --color-copy: #2a1c19;
+  --color-copy-muted: #3a2925;
   --shadow-glass:
     inset 1px 1px 1px -0.5px rgb(255 255 255 / 0.9),
     inset -1px -1px 1px -0.5px rgb(255 255 255 / 0.6),

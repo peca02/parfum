@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
+import { videoScrollRange } from "@/lib/scrollSections";
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
@@ -16,25 +17,24 @@ const DESCENDER_ROOM_EM = 0.15;
 const ENTER_FEATHER_EM = 0.5;
 const EXIT_FEATHER_EM = 0.3;
 
-// Fractions of the full page scroll, the same progress that drives the video.
+// Fractions of the video scroll range, the same progress that drives the video.
 type ScrollRange = [start: number, end: number];
 
 type ScrollRevealProps = {
   children: ReactNode;
   from: "left" | "right";
   enter: ScrollRange;
-  // Without an exit range the text stays in place until the end of the page.
+  // Without an exit range the text stays in place until the end of the video.
   exit?: ScrollRange;
   className?: string;
 };
 
-// The timeline lasts exactly 1, so its time equals the page scroll progress.
+// The timeline lasts exactly 1, so its time equals the video scroll progress.
 const createScrollTimeline = () =>
   gsap
     .timeline({
       scrollTrigger: {
-        start: 0,
-        end: "max",
+        ...videoScrollRange,
         scrub: SCRUB_SMOOTHING_S,
         invalidateOnRefresh: true,
       },

@@ -5,6 +5,10 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/components/LoaderProvider";
+import {
+  VIDEO_SCROLL_TRIGGER_ID,
+  videoScrollRange,
+} from "@/lib/scrollSections";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -57,9 +61,8 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     };
 
     const scrollTrigger = ScrollTrigger.create({
-      // Track the full page scroll range, independent of the <html> element height.
-      start: 0,
-      end: "max",
+      id: VIDEO_SCROLL_TRIGGER_ID,
+      ...videoScrollRange,
       scrub: true,
       onUpdate: (self) => {
         if (!Number.isFinite(video.duration)) return;

@@ -1,4 +1,5 @@
 import { ScrollCopy } from "@/components/ScrollCopy";
+import { ScrollHint } from "@/components/ScrollHint";
 import { ScrollVideo } from "@/components/ScrollVideo";
 
 export default function HomePage() {
@@ -10,6 +11,7 @@ export default function HomePage() {
         poster="/videos/cinematic-video-poster.jpg"
       />
       <ScrollCopy />
+      <ScrollHint />
       {/* Temporary spacer that provides scroll length until real content is added. */}
       <div className="h-[750vh]" aria-hidden="true" />
     </main>
