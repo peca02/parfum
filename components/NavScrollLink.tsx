@@ -9,9 +9,9 @@ import { VIDEO_SCROLL_TRIGGER_ID } from "@/lib/scrollSections";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-const MIN_DURATION_S = 2;
-const MAX_DURATION_S = 6;
-const DURATION_PER_VIEWPORT_S = 0.8;
+const MIN_DURATION_S = 2.5;
+const MAX_DURATION_S = 7.5;
+const DURATION_PER_VIEWPORT_S = 1;
 
 type NavScrollLinkProps = Omit<ComponentProps<typeof Link>, "onClick"> & {
   // Fraction of the video scroll range to land on.
@@ -42,7 +42,8 @@ export function NavScrollLink({ progress, ...linkProps }: NavScrollLinkProps) {
             MAX_DURATION_S,
             viewports * DURATION_PER_VIEWPORT_S,
           ),
-      ease: "power2.inOut",
+      // A slowing ease makes the scrubbed video look choppy, so the speed stays constant.
+      ease: "none",
       overwrite: true,
     });
   };
