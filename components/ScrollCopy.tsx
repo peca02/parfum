@@ -1,3 +1,4 @@
+import { ScrollCta } from "@/components/ScrollCta";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { scrollSections } from "@/lib/scrollSections";
 
@@ -35,6 +36,12 @@ export function ScrollCopy() {
         <p className="mt-[0.5em] text-lead font-bold text-copy-muted">
           A scent that stays long after you leave.
         </p>
+        <ScrollCta
+          price="€120"
+          label="Shop the scent"
+          href="#buy"
+          enter={scrollSections.cta.enter}
+        />
       </ScrollReveal>
     </div>
   );

@@ -30,7 +30,7 @@ type ScrollRevealProps = {
 };
 
 // The timeline lasts exactly 1, so its time equals the video scroll progress.
-const createScrollTimeline = () =>
+export const createScrollTimeline = () =>
   gsap
     .timeline({
       scrollTrigger: {
@@ -65,7 +65,10 @@ export function ScrollReveal({
       // are in viewport units, so the line breaks stay the same on resize.
       document.fonts.ready.then(() =>
         context.add(() => {
-          const textBlocks = Array.from(container.children);
+          // Children with their own entrance, like the CTA, stay out of the line split.
+          const textBlocks = Array.from(container.children).filter(
+            (child) => !child.hasAttribute("data-reveal-ignore"),
+          );
           const split = SplitText.create(textBlocks, {
             type: "lines",
             mask: "lines",

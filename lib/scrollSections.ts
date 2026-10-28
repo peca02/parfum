@@ -1,7 +1,7 @@
 import type { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Fractions of the video scroll range, the same progress that drives the video.
-type ScrollRange = [start: number, end: number];
+export type ScrollRange = [start: number, end: number];
 
 type ScrollSection = {
   enter: ScrollRange;
@@ -23,6 +23,7 @@ export const scrollSections = {
   essence: { enter: [0.05, 0.16], exit: [0.2, 0.3] },
   linger: { enter: [0.35, 0.475], exit: [0.525, 0.65] },
   presence: { enter: [0.8, 0.95] },
+  cta: { enter: [0.9, 1] },
 } satisfies Record<string, ScrollSection>;
 
 // The middle of the whole animation, where the drifting text is vertically centered.
