@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { NavScrollLink } from "@/components/NavScrollLink";
 import { createScrollTimeline } from "@/components/ScrollReveal";
 import type { ScrollRange } from "@/lib/scrollSections";
 
@@ -28,6 +28,10 @@ type ScrollCtaProps = {
   label: string;
   price: string;
   href: string;
+  // Fraction of the target trigger's scroll range the link scrolls to.
+  progress: number;
+  // Id of the ScrollTrigger whose scroll range progress refers to.
+  triggerId: string;
   enter: ScrollRange;
   className?: string;
 };
@@ -36,6 +40,8 @@ export function ScrollCta({
   label,
   price,
   href,
+  progress,
+  triggerId,
   enter,
   className = "",
 }: ScrollCtaProps) {
@@ -50,6 +56,8 @@ export function ScrollCta({
 
       const [enterStart, enterEnd] = enter;
       const enterDuration = enterEnd - enterStart;
+      // Inside the buy section's screenshot the CTA is inert and stays still, like a picture.
+      const isFrozen = () => link.closest("[inert]") !== null;
 
       // Swaps the label and the price every few seconds, but only while the entrance is
       // complete. Scrolling back stops the swaps, so the exit runs with the text on screen.
@@ -87,6 +95,11 @@ export function ScrollCta({
         };
 
         const swap = () => {
+          // While the CTA is part of the screenshot, the swap waits for the next turn.
+          if (isFrozen()) {
+            delayedSwap = gsap.delayedCall(SWAP_DELAY_S, swap);
+            return;
+          }
           delayedSwap = null;
           hasSwapped = true;
           const nextIndex = 1 - shownIndex;
@@ -232,6 +245,14 @@ export function ScrollCta({
           };
 
           const handlePointerMove = (event: PointerEvent) => {
+            if (isFrozen()) {
+              if (isPulled) {
+                isPulled = false;
+                release();
+              }
+              return;
+            }
+
             // The bounds include the current pull, so it is subtracted to get the resting center.
             const bounds = link.getBoundingClientRect();
             const centerX =
@@ -268,9 +289,11 @@ export function ScrollCta({
 
   return (
     // ScrollReveal leaves this link out of its line split, because it runs its own entrance.
-    <Link
+    <NavScrollLink
       ref={linkRef}
       href={href}
+      progress={progress}
+      triggerId={triggerId}
       data-reveal-ignore
       className={`relative mt-[1.5em] grid size-[4.5em] place-items-center rounded-full text-lead font-bold text-cta-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copy ${className}`}
     >
@@ -325,6 +348,6 @@ export function ScrollCta({
       </span>
       {/* The visible texts swap every few seconds, so screen readers get both at once instead. */}
       <span className="sr-only">{`${label} ${price}`}</span>
-    </Link>
+    </NavScrollLink>
   );
 }

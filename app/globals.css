@@ -3,13 +3,32 @@
 @theme {
   --color-overlay: #000;
   --color-overlay-foreground: #fff;
-  /* Temporary navigation colors until the design system is in place. */
-  --color-glass-foreground: #2a1c19;
+  /* Temporary navigation colors until the design system is in place. They mix into the
+     dark theme by --theme-dark, from 0 to 1, which the buy section sets on <html>. */
+  --color-glass-foreground: color-mix(
+    in oklab,
+    #2a1c19,
+    var(--color-night-foreground) calc(var(--theme-dark, 0) * 100%)
+  );
   --color-glass-tint: rgb(255 255 255 / 0.16);
+  --color-glass-cta: var(--color-glass-foreground);
+  --color-glass-cta-foreground: color-mix(
+    in oklab,
+    #fff,
+    var(--color-night) calc(var(--theme-dark, 0) * 100%)
+  );
+  /* The copy sits on the light video, also inside the buy section's screenshot,
+     so it keeps its colors when the page turns dark. */
   --color-cta: #2a1c19;
   --color-cta-foreground: #fff;
   --color-copy: #2a1c19;
   --color-copy-muted: #3a2925;
+  /* The page behind the video, picked from its last frame, before the buy section turns it dark. */
+  --color-day: #efdcd7;
+  /* Dark theme of the buy section and the payment page. */
+  --color-night: #140e0c;
+  --color-night-foreground: #f4e9e5;
+  --color-night-muted: #b3a19b;
   --shadow-glass:
     inset 1px 1px 1px -0.5px rgb(255 255 255 / 0.9),
     inset -1px -1px 1px -0.5px rgb(255 255 255 / 0.6),
@@ -30,5 +49,10 @@
   html {
     /* Reserves the scrollbar space, so unlocking scroll after the loader doesn't shift the layout. */
     scrollbar-gutter: stable;
+
+    /* Locks scrolling from the first paint, before any JavaScript runs, until the loader is removed. */
+    &:has([data-scroll-lock]) {
+      overflow: hidden;
+    }
   }
 }

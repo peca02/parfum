@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
-import { videoScrollRange } from "@/lib/scrollSections";
+import { videoScrollRange, type ScrollRange } from "@/lib/scrollSections";
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
@@ -17,24 +17,27 @@ const DESCENDER_ROOM_EM = 0.15;
 const ENTER_FEATHER_EM = 0.5;
 const EXIT_FEATHER_EM = 0.3;
 
-// Fractions of the video scroll range, the same progress that drives the video.
-type ScrollRange = [start: number, end: number];
-
 type ScrollRevealProps = {
   children: ReactNode;
   from: "left" | "right";
   enter: ScrollRange;
-  // Without an exit range the text stays in place until the end of the video.
+  // Without an exit range the text stays in place until the end of the scroll range.
   exit?: ScrollRange;
+  // The scroll range that enter and exit are fractions of. Defaults to the video.
+  scrollRange?: ScrollTrigger.Vars;
+  // Whether the text drifts upwards while it's on screen.
+  drift?: boolean;
   className?: string;
 };
 
-// The timeline lasts exactly 1, so its time equals the video scroll progress.
-export const createScrollTimeline = () =>
+// The timeline lasts exactly 1, so its time equals the progress of the scroll range.
+export const createScrollTimeline = (
+  scrollRange: ScrollTrigger.Vars = videoScrollRange,
+) =>
   gsap
     .timeline({
       scrollTrigger: {
-        ...videoScrollRange,
+        ...scrollRange,
         scrub: SCRUB_SMOOTHING_S,
         invalidateOnRefresh: true,
       },
@@ -46,6 +49,8 @@ export function ScrollReveal({
   from,
   enter,
   exit,
+  scrollRange,
+  drift = true,
   className = "",
 }: ScrollRevealProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,18 +103,20 @@ export function ScrollReveal({
             marginBottom: `-${DESCENDER_ROOM_EM}em`,
           });
 
-          const timeline = createScrollTimeline();
+          const timeline = createScrollTimeline(scrollRange);
 
-          timeline.fromTo(
-            container,
-            { y: () => window.innerHeight * DRIFT },
-            {
-              y: () => (exit ? -window.innerHeight * DRIFT : 0),
-              ease: "none",
-              duration: (exit ? exit[1] : enterEnd) - enterStart,
-            },
-            enterStart,
-          );
+          if (drift) {
+            timeline.fromTo(
+              container,
+              { y: () => window.innerHeight * DRIFT },
+              {
+                y: () => (exit ? -window.innerHeight * DRIFT : 0),
+                ease: "none",
+                duration: (exit ? exit[1] : enterEnd) - enterStart,
+              },
+              enterStart,
+            );
+          }
 
           const hiddenLine = {
             xPercent: direction * 100,
@@ -162,7 +169,7 @@ export function ScrollReveal({
     });
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
-      const timeline = createScrollTimeline();
+      const timeline = createScrollTimeline(scrollRange);
 
       timeline.fromTo(
         container,

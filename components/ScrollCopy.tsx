@@ -1,6 +1,6 @@
 import { ScrollCta } from "@/components/ScrollCta";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { scrollSections } from "@/lib/scrollSections";
+import { BUY_SCROLL_TRIGGER_ID, scrollSections } from "@/lib/scrollSections";
 
 const displayStyles = "w-min text-display font-black tracking-tight";
 
@@ -36,10 +36,13 @@ export function ScrollCopy() {
         <p className="mt-[0.5em] text-lead font-bold text-copy-muted">
           A scent that stays long after you leave.
         </p>
+        {/* Scrolls to the end of the buy section, where the form is fully shown. */}
         <ScrollCta
           label="Buy"
           price="€120"
           href="#buy"
+          triggerId={BUY_SCROLL_TRIGGER_ID}
+          progress={1}
           enter={scrollSections.cta.enter}
           className="mx-auto"
         />

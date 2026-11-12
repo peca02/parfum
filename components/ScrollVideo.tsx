@@ -28,8 +28,7 @@ type ScrollVideoProps = {
 export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
-  const { isLoaderVisible, hideLoader } = useLoader();
+  const { hideLoader, counterRef } = useLoader();
 
   useGSAP(() => {
     const video = videoRef.current;
@@ -41,11 +40,6 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
     let loadProgress = 0;
     let displayedProgress = 0;
     const loaderStart = performance.now();
-
-    // Scrolling stays locked while the loader is visible. The root layout already renders
-    // this class; adding it again keeps the lock after a remount (e.g. React Strict Mode).
-    const root = document.documentElement;
-    root.classList.add("overflow-hidden");
 
     const doSeek = () => {
       seekPending = false;
@@ -118,7 +112,6 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       if (displayedProgress >= 100) {
         gsap.ticker.remove(updateLoader);
         hideLoader();
-        root.classList.remove("overflow-hidden");
       }
     };
 
@@ -217,6 +210,8 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       });
 
       const handleMouseMove = (event: MouseEvent) => {
+        // An inert video is part of the still screenshot in the buy section, so it ignores the cursor.
+        if (wrapper.closest("[inert]")) return;
         const moveX = (event.clientX / window.innerWidth) * 2 - 1;
         const moveY = (event.clientY / window.innerHeight) * 2 - 1;
         xTo(moveX * -PARALLAX_PX);
@@ -238,40 +233,25 @@ export function ScrollVideo({ src, poster, className = "" }: ScrollVideoProps) {
       video.removeEventListener("canplay", handleCanPlay);
       window.removeEventListener("touchstart", handleTouchStart);
       gsap.ticker.remove(updateLoader);
-      root.classList.remove("overflow-hidden");
       manualLoadController.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   });
 
   return (
-    <>
-      <div
-        ref={wrapperRef}
-        className={`fixed top-0 left-0 z-0 h-full w-full origin-center ${className}`}
-      >
-        <video
-          ref={videoRef}
-          src={src}
-          className="h-full w-full bg-cover bg-center bg-no-repeat object-cover"
-          muted
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-        />
-      </div>
-
-      {isLoaderVisible && (
-        <div
-          role="status"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-overlay font-sans text-2xl text-overlay-foreground"
-        >
-          Loading...&nbsp;
-          <span aria-hidden="true">
-            <span ref={counterRef}>0</span>%
-          </span>
-        </div>
-      )}
-    </>
+    <div
+      ref={wrapperRef}
+      className={`fixed top-0 left-0 z-0 h-full w-full origin-center ${className}`}
+    >
+      <video
+        ref={videoRef}
+        src={src}
+        className="h-full w-full bg-cover bg-center bg-no-repeat object-cover"
+        muted
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+      />
+    </div>
   );
 }

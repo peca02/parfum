@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { LoaderProvider } from "@/components/LoaderProvider";
-import { Navigation } from "@/components/Navigation";
 import "./globals.css";
 
 const satoshi = localFont({
@@ -20,18 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // overflow-hidden locks scrolling from the first paint, before any JavaScript runs;
-    // ScrollVideo removes it when its loader hides.
-    <html
-      lang="en"
-      className={`${satoshi.variable} h-full overflow-hidden antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <LoaderProvider>
-          <Navigation />
-          {children}
-        </LoaderProvider>
-      </body>
+    <html lang="en" className={`${satoshi.variable} h-full antialiased`}>
+      {/* The dark background also fills the scrollbar gutter, which matches the dark pages. */}
+      <body className="min-h-full flex flex-col bg-night">{children}</body>
     </html>
   );
 }

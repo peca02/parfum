@@ -14,19 +14,24 @@ const MAX_DURATION_S = 7.5;
 const DURATION_PER_VIEWPORT_S = 1;
 
 type NavScrollLinkProps = Omit<ComponentProps<typeof Link>, "onClick"> & {
-  // Fraction of the video scroll range to land on.
+  // Fraction of the scroll range to land on.
   progress: number;
+  // Id of the ScrollTrigger whose scroll range progress refers to. Defaults to the video.
+  triggerId?: string;
 };
 
-export function NavScrollLink({ progress, ...linkProps }: NavScrollLinkProps) {
+export function NavScrollLink({
+  progress,
+  triggerId = VIDEO_SCROLL_TRIGGER_ID,
+  ...linkProps
+}: NavScrollLinkProps) {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    const videoTrigger = ScrollTrigger.getById(VIDEO_SCROLL_TRIGGER_ID);
-    if (!videoTrigger) return;
+    const trigger = ScrollTrigger.getById(triggerId);
+    if (!trigger) return;
     event.preventDefault();
 
-    // Measured from the video range, not the page end, so content after the video doesn't shift it.
-    const target =
-      videoTrigger.start + progress * (videoTrigger.end - videoTrigger.start);
+    // Measured from the trigger's range, not the page end, so content after it doesn't shift it.
+    const target = trigger.start + progress * (trigger.end - trigger.start);
     const viewports = Math.abs(target - window.scrollY) / window.innerHeight;
     const isReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",

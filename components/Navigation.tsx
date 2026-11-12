@@ -1,7 +1,10 @@
-import Link from "next/link";
 import { NavigationIntro } from "@/components/NavigationIntro";
 import { NavScrollLink } from "@/components/NavScrollLink";
-import { getSectionMidpoint, scrollSections } from "@/lib/scrollSections";
+import {
+  BUY_SCROLL_TRIGGER_ID,
+  getSectionMidpoint,
+  scrollSections,
+} from "@/lib/scrollSections";
 
 const navLinks = [
   {
@@ -42,14 +45,17 @@ export function Navigation() {
             </li>
           ))}
           <li>
-            <Link
+            {/* Lands at the end of the buy section, where the form is fully shown. */}
+            <NavScrollLink
               href={ctaLink.href}
+              triggerId={BUY_SCROLL_TRIGGER_ID}
+              progress={1}
               data-nav-link
               data-nav-cta
-              className={`block rounded-full bg-cta px-4 py-2 text-sm uppercase font-bold text-cta-foreground transition-colors md:px-6 md:text-base ${focusStyles}`}
+              className={`block rounded-full bg-glass-cta px-4 py-2 text-sm uppercase font-bold text-glass-cta-foreground transition-colors md:px-6 md:text-base ${focusStyles}`}
             >
               {ctaLink.label}
-            </Link>
+            </NavScrollLink>
           </li>
         </ul>
       </NavigationIntro>
