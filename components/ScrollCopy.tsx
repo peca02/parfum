@@ -37,8 +37,8 @@ export function ScrollCopy() {
           A scent that stays long after you leave.
         </p>
         <ScrollCta
+          label="Buy"
           price="€120"
-          label="Shop the scent"
           href="#buy"
           enter={scrollSections.cta.enter}
         />
