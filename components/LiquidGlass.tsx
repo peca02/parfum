@@ -108,6 +108,8 @@ export function LiquidGlass({
     const resizeObserver = new ResizeObserver(() => {
       const width = element.offsetWidth;
       const height = element.offsetHeight;
+      // A hidden glass (e.g. on a page Next.js keeps in the background) has no size to map.
+      if (width === 0 || height === 0) return;
       const radius = parseFloat(getComputedStyle(element).borderTopLeftRadius);
       const url = createDisplacementMap(width, height, radius);
       setDisplacementMap(url ? { url, width, height } : null);
