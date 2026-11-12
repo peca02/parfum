@@ -28,7 +28,7 @@ export function ScrollCopy() {
       <ScrollReveal
         from="left"
         {...scrollSections.presence}
-        className="col-start-1 row-start-1 max-w-2/5 justify-self-start"
+        className="col-start-1 row-start-1 max-w-2/5 justify-self-start text-center"
       >
         <h2 className="text-display-sm font-black tracking-tight">
           Quietly bold
@@ -41,6 +41,7 @@ export function ScrollCopy() {
           price="€120"
           href="#buy"
           enter={scrollSections.cta.enter}
+          className="mx-auto"
         />
       </ScrollReveal>
     </div>

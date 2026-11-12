@@ -19,6 +19,8 @@ const LABEL_PULL = 0.5;
 const OUTLINE_LENGTH = 100;
 // How long each text stays on screen before the label and the price swap.
 const SWAP_DELAY_S = 5;
+// The first swap comes sooner, so visitors who reach the end see the price quickly.
+const FIRST_SWAP_DELAY_S = 1;
 const ROLL_DURATION_S = 0.5;
 const ROLL_STAGGER_S = 0.02;
 
@@ -27,9 +29,16 @@ type ScrollCtaProps = {
   price: string;
   href: string;
   enter: ScrollRange;
+  className?: string;
 };
 
-export function ScrollCta({ label, price, href, enter }: ScrollCtaProps) {
+export function ScrollCta({
+  label,
+  price,
+  href,
+  enter,
+  className = "",
+}: ScrollCtaProps) {
   const linkRef = useRef<HTMLAnchorElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
 
@@ -52,6 +61,7 @@ export function ScrollCta({ label, price, href, enter }: ScrollCtaProps) {
           .toArray<HTMLElement>("[data-cta-text]", link)
           .map((layer) => gsap.utils.toArray<HTMLElement>("[data-cta-char]", layer));
         let shownIndex = 0;
+        let hasSwapped = false;
         let delayedSwap: gsap.core.Tween | null = null;
         let swapTimeline: gsap.core.Timeline | null = null;
         let isHovered = false;
@@ -69,12 +79,16 @@ export function ScrollCta({ label, price, href, enter }: ScrollCtaProps) {
           stopTimer();
           const isEntered = scrollTimeline.progress() === 1;
           if (isEntered && !isHovered && !isFocused) {
-            delayedSwap = gsap.delayedCall(SWAP_DELAY_S, swap);
+            delayedSwap = gsap.delayedCall(
+              hasSwapped ? SWAP_DELAY_S : FIRST_SWAP_DELAY_S,
+              swap,
+            );
           }
         };
 
         const swap = () => {
           delayedSwap = null;
+          hasSwapped = true;
           const nextIndex = 1 - shownIndex;
           swapTimeline = gsap
             .timeline({
@@ -258,7 +272,7 @@ export function ScrollCta({ label, price, href, enter }: ScrollCtaProps) {
       ref={linkRef}
       href={href}
       data-reveal-ignore
-      className="relative mt-[1.5em] grid size-[4.5em] place-items-center rounded-full text-lead font-bold text-cta-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copy"
+      className={`relative mt-[1.5em] grid size-[4.5em] place-items-center rounded-full text-lead font-bold text-cta-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copy ${className}`}
     >
       <span
         data-cta-fill
