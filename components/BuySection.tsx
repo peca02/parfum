@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { ScrollHint } from "@/components/ScrollHint";
 import { createScrollTimeline, ScrollReveal } from "@/components/ScrollReveal";
 import {
   BUY_SCROLL_TRIGGER_ID,
@@ -17,6 +18,16 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const SCREENSHOT_RADIUS_PX = 16;
 // How far the form items rise while they fade in.
 const FORM_RISE_PX = 32;
+
+// The pause between the end of the video and the screenshot, where the page seems to have ended.
+function getPauseZone(): [start: number, end: number] {
+  const trigger = ScrollTrigger.getById(BUY_SCROLL_TRIGGER_ID);
+  if (!trigger) return [Infinity, Infinity];
+  const pauseEnd =
+    trigger.start +
+    (trigger.end - trigger.start) * buySections.screenshot.enter[0];
+  return [trigger.start, pauseEnd];
+}
 
 type BuySectionProps = {
   // The video and its copy. After the video they shrink into a still screenshot.
@@ -89,10 +100,10 @@ export function BuySection({ screenshot, children }: BuySectionProps) {
         onUpdate: (self) => setIsScreenshot(self.progress > screenshotStart),
       });
 
-    // The page turns dark while the screenshot shrinks. Blending the navigation colors along
-    // would pass them through the same mid tone as the background and hide the navigation, so
-    // --theme-dark switches them halfway, where light text reads better, and their color
-    // transitions smooth the switch.
+    // The page turns dark while the screenshot shrinks. --theme-dark blends the navigation
+    // colors only in the middle third, around where the background crosses from light to dark.
+    // Blending them over the whole shrink would keep them close to the background's mid tone
+    // for long, and the navigation would almost disappear.
     const addThemeChange = (timeline: gsap.core.Timeline, ease: string) =>
       timeline
         .fromTo(
@@ -104,8 +115,8 @@ export function BuySection({ screenshot, children }: BuySectionProps) {
         .fromTo(
           root,
           { "--theme-dark": 0 },
-          { "--theme-dark": 1, duration: 0, immediateRender: false },
-          screenshotStart + screenshotDuration / 2,
+          { "--theme-dark": 1, ease: "none", duration: screenshotDuration / 3 },
+          screenshotStart + screenshotDuration / 3,
         );
 
     const addFormEntrance = (
@@ -241,6 +252,8 @@ export function BuySection({ screenshot, children }: BuySectionProps) {
           {children}
         </div>
       </section>
+
+      <ScrollHint text="Keep scrolling" getZone={getPauseZone} />
     </>
   );
 }

@@ -42,18 +42,24 @@ export function CheckoutForm() {
         className="flex flex-col justify-between gap-5 self-stretch"
       >
         {fields.map((field) => (
-          <div key={field.id} data-buy-reveal className="flex flex-col gap-2">
+          <div
+            key={field.id}
+            data-buy-reveal
+            className="group flex flex-col gap-2"
+          >
             <label
               htmlFor={field.id}
-              className="text-sm font-semibold tracking-widest text-night-muted uppercase"
+              className="text-sm font-semibold tracking-widest text-night-muted uppercase transition-colors duration-300 group-focus-within:text-night-foreground"
             >
               {field.label}
             </label>
+            {/* The focused field lights up its border and fill instead of an outline.
+                outline-hidden still shows an outline in forced colors mode. */}
             <input
               id={field.id}
               type={field.type}
               autoComplete={field.autoComplete}
-              className={`rounded-full border border-night-foreground/25 bg-transparent px-6 py-3 text-lg text-night-foreground transition-colors hover:border-night-foreground/50 focus:border-night-foreground ${focusStyles}`}
+              className="rounded-full border border-night-foreground/25 bg-transparent px-6 py-3 text-lg text-night-foreground outline-hidden transition duration-300 hover:border-night-foreground/50 focus:border-night-foreground focus:bg-night-foreground/5"
             />
           </div>
         ))}
@@ -61,7 +67,7 @@ export function CheckoutForm() {
         <button
           type="submit"
           data-buy-reveal
-          className={`mt-2 flex items-center justify-center gap-3 rounded-full bg-night-foreground px-8 py-4 text-lg font-bold text-night uppercase transition-colors hover:bg-night-foreground/85 ${focusStyles}`}
+          className={`mt-2 flex cursor-pointer items-center justify-center gap-3 rounded-full bg-night-foreground px-8 py-4 text-lg font-bold text-night uppercase transition-colors hover:bg-night-foreground/85 ${focusStyles}`}
         >
           Continue to payment
           <PiArrowRightBold aria-hidden="true" className="size-5" />

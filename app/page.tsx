@@ -26,11 +26,11 @@ export default function HomePage() {
         >
           <CheckoutForm />
         </BuySection>
-        <ScrollHint />
+        <ScrollHint text="Scroll to discover" />
         {/* Scroll length of the video. */}
         <div className="h-[750vh]" aria-hidden="true" />
         {/* Scroll length of the buy section, which has to match BUY_SCROLL_START in lib/scrollSections.ts. */}
-        <div className="h-[200vh]" aria-hidden="true" />
+        <div className="h-[392vh]" aria-hidden="true" />
       </main>
       <Loader />
     </LoaderProvider>

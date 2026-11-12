@@ -3,8 +3,8 @@
 @theme {
   --color-overlay: #000;
   --color-overlay-foreground: #fff;
-  /* Temporary navigation colors until the design system is in place. They mix into the
-     dark theme by --theme-dark, from 0 to 1, which the buy section sets on <html>. */
+  /* Temporary navigation colors until the design system is in place. They blend into the
+     dark theme as --theme-dark goes from 0 to 1, which the buy section animates on <html>. */
   --color-glass-foreground: color-mix(
     in oklab,
     #2a1c19,
